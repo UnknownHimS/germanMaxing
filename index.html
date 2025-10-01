@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>German-Tagalog Advanced Learner</title>
+<style>
+  :root {
+    --bg-light: #f9f9f9;
+    --text-light: #222;
+    --btn-bg-light: #007bff;
+    --btn-bg-light-hover: #0056b3;
+    --card-bg-light: #fff;
+    --border-light: #ccc;
+
+    --bg-dark: #121212;
+    --text-dark: #eee;
+    --btn-bg-dark: #1a73e8;
+    --btn-bg-dark-hover: #135ab6;
+    --card-bg-dark: #1e1e1e;
+    --border-dark: #444;
+  }
+  body {
+    margin: 0; padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    background: var(--bg-light);
+    color: var(--text-light);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body.dark {
+    background: var(--bg-dark);
+    color: var(--text-dark);
+  }
+  header {
+    padding: 1rem;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.4rem;
+    background: var(--btn-bg-light);
+    color: white;
+  }
+  body.dark header {
+    background: var(--btn-bg-dark);
+  }
+  main {
+    flex: 1;
+    padding: 0.75rem 1rem 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .controls, .navigation, .mode-toggle, .reset-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    justify-content: center;
+  }
+  select, input[type="text"] {
+    font-size: 1.1rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border: 1.5px solid var(--border-light);
+    flex-grow: 1;
+    min-width: 120px;
+    background: var(--card-bg-light);
+    color: var(--text-light);
+  }
+  body.dark select, body.dark input[type="text"] {
+    background: var(--card-bg-dark);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+  }
+  button {
+    font-size: 1.1rem;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    border: none;
+    background: var(--btn-bg-light);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    user-select: none;
+    transition: background-color 0.2s ease;
+  }
+  button:disabled {
+    background: #999;
+    cursor: default;
+  }
+  button:hover:not(:disabled),
+  button:focus-visible:not(:disabled) {
+    background: var(--btn-bg-light-hover);
+    outline: none;
+  }
+  body.dark button {
+    background: var(--btn-bg-dark);
+  }
+  body.dark button:hover:not(:disabled),
+  body.dark button:focus-visible:not(:disabled) {
+    background: var(--btn-bg-dark-hover);
+  }
+  .card {
+    background: var(--card-bg-light);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    margin-bottom: 1rem;
+    user-select: none;
+  }
+  body.dark .card {
+    background: var(--card-bg-dark);
+    box-shadow: 0 2px 8px rgb(255 255 255 / 0.1);
+  }
+  .german-word {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    user-select: text;
+  }
+  .pronunciation {
+    font-size: 1.3rem;
+    font-style: italic;
+    margin-bottom: 0.75rem;
+    user-select: text;
+    min-height: 1.6em;
+  }
+  .pronunciation.hidden {
+    color: transparent;
+    text-shadow: 0 0 8px rgba(0,0,0,0.3);
+    user-select: none;
+  }
+  .input-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .input-group input[type="text"] {
+    flex-grow: 1;
+  }
+  .feedback {
+    font-weight: 600;
+    min-height: 1.4em;
+    user-select: none;
+  }
+  .feedback.correct {
+    color: #28a745;
+  }
+  .feedback.incorrect {
+    color: #dc3545;
+  }
+  .progress {
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    user-select: none;
+  }
+  .filter-group {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  label {
+    user-select: none;
+    font-weight: 600;
+  }
+  .custom-list {
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 0.5rem;
+    background: var(--card-bg-light);
+  }
+  body.dark .custom-list {
+    background: var(--card-bg-dark);
+    border-color: var(--border-dark);
+  }
+  .custom-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+    padding: 0.25rem 0.5rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+  body.dark .custom-item {
+    border-color: var(--border-dark);
+  }
+  .custom-item:last-child {
+    border-bottom: none;
+  }
+  .custom-item span {
+    flex-grow: 1;
+    user-select: text;
+  }
+  .custom-item button {
+    font-size: 0.9rem;
+    padding: 0.25rem 0.5rem;
+    margin-left: 0.3rem;
+  }
+  .add-edit-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    justify-content: center;
+  }
+  .add-edit-form input[type="text"] {
+    flex-grow: 1;
+    min-width: 120px;
+  }
+  .dark-toggle {
+    margin-left: auto;
+    user-select: none;
+  }
+  @media (max-width: 400px) {
+    .input-group {
+      flex-direction: column;
+    }
+    .add-edit-form {
+      flex-direction: column;
+    }
+    button {
+      width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+<header>
+  German-Tagalog Advanced Learner
+  <button id="darkModeToggle" class="dark-toggle" aria-label="Toggle Dark Mode" title="Toggle Dark Mode" style="margin-left:1rem; font-size:1rem; padding:0.3rem 0.6rem;">🌙</button>
+</header>
+<main>
+  <section class="controls" aria-label="Filter and source selection">
+    <label for="levelFilter">Level:</label>
+    <select id="levelFilter" aria-describedby="levelHelp" title="Filter by difficulty level">
+      <option value="all">Lahat ng Level</option>
+    </select>
+
+    <label for="sourceFilter">Pinagmulan:</label>
+    <select id="sourceFilter" aria-describedby="sourceHelp" title="Choose source of study items">
+      <option value="built-in">Built-in</option>
+      <option value="custom">Custom</option>
+      <option value="both" selected>Pinagsama</option>
+    </select>
+
+    <label for="modeToggle" style="align-self:center; font-weight:600; cursor:pointer;">
+      <input type="checkbox" id="modeToggle" title="Toggle Recall Mode" aria-label="Toggle Recall Mode" />
+      Recall Mode
+    </label>
+  </section>
+
+  <section class="card" aria-live="polite" aria-atomic="true" aria-relevant="additions removals">
+    <div class="german-word" id="germanWord" tabindex="0" aria-label="German word or phrase"></div>
+    <button id="revealBtn" aria-pressed="false" aria-label="Ipakita ang tamang pagbigkas sa Tagalog" style="margin-bottom:0.75rem;">Ipakita ang Pagbigkas</button>
+    <div class="pronunciation hidden" id="pronunciation" aria-live="polite" aria-atomic="true"></div>
+
+    <form id="practiceForm" class="input-group" aria-label="Practice typing the pronunciation">
+      <input type="text" id="practiceInput" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" placeholder="I-type ang pagbigkas dito..." aria-describedby="feedback" aria-label="Type the Tagalog phonetic pronunciation" />
+      <button type="submit" id="checkBtn" aria-label="Suriin ang sagot">Suriin</button>
+    </form>
+    <div id="feedback" class="feedback" aria-live="assertive" role="alert"></div>
+  </section>
+
+  <section class="navigation" aria-label="Navigation controls">
+    <button id="prevBtn" aria-label="Previous item">← Nakaraan</button>
+    <div class="progress" id="progressIndicator" aria-live="polite" aria-atomic="true">Item 0 ng 0</div>
+    <button id="nextBtn" aria-label="Next item">Susunod →</button>
+  </section>
+
+  <section aria-label="Add or edit custom entries" style="margin-bottom:1rem;">
+    <form id="addEditForm" class="add-edit-form" aria-describedby="addEditHelp" novalidate>
+      <input type="text" id="customGerman" placeholder="German word/phrase" aria-label="German word or phrase" required />
+      <input type="text" id="customPronunciation" placeholder="Tagalog phonetic pronunciation" aria-label="Tagalog phonetic pronunciation" required />
+      <button type="submit" id="addEditBtn" aria-label="Add or update custom entry">Idagdag</button>
+      <button type="button" id="cancelEditBtn" aria-label="Cancel editing" style="display:none; background:#dc3545;">Kanselahin</button>
+    </form>
+    <small id="addEditHelp" style="display:block; text-align:center; color:#666; font-size:0.85rem;">
+      Magdagdag o i-edit ang sarili mong mga salita at pagbigkas.
+    </small>
+  </section>
+
+  <section aria-label="Custom entries list">
+    <div class="custom-list" id="customList" tabindex="0" aria-live="polite" aria-atomic="true" aria-relevant="additions removals">
+      <!-- Custom entries appear here -->
+    </div>
+  </section>
+
+  <section class="reset-section" aria-label="Reset user data">
+    <button id="resetProgressBtn" aria-label="Reset progress and custom entries" style="background:#dc3545;">I-reset ang Lahat</button>
+  </section>
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  // Built-in dataset: German word/phrase + Tagalog phonetic pronunciation + level (1-50)
+  // For demo, a small sample; in real app, expand to 50+ items.
+  const builtInData = [
+    { german: "Haus", pronunciation: "haus", level: 1 },
+    { german: "Freund", pronunciation: "froind", level: 2 },
+    { german: "Entschuldigung", pronunciation: "entshuldigung", level: 10 },
+    { german: "Wissenschaft", pronunciation: "vissenshaft", level: 20 },
+    { german: "Herausforderung", pronunciation: "heraousforderung", level: 30 },
+    { german: "Verantwortung", pronunciation: "ferantvortung", level: 40 },
+    { german: "Selbstverständlich", pronunciation: "zelpstfershtehend", level: 50 },
+    // Add more items here up to level 50...
+  ];
+
+  // Constants for localStorage keys
+  const LS_CUSTOM = "germanTagalogCustomEntries";
+  const LS_PROGRESS = "germanTagalogProgress";
+  const LS_DARKMODE = "germanTagalogDarkMode";
+
+  // Elements
+  const levelFilter = document.getElementById("levelFilter");
+  const sourceFilter = document.getElementById("sourceFilter");
+  const modeToggle = document.getElementById("modeToggle");
+  const germanWordEl = document.getElementById("germanWord");
+  const pronunciationEl = document.getElementById("pronunciation");
+  const revealBtn = document.getElementById("revealBtn");
+  const practiceForm = document.getElementById("practiceForm");
+  const practiceInput = document.getElementById("practiceInput");
+  const checkBtn = document.getElementById("checkBtn");
+  const feedbackEl = document.getElementById("feedback");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const progressIndicator = document.getElementById("progressIndicator");
+  const addEditForm = document.getElementById("addEditForm");
+  const customGermanInput = document.getElementById("customGerman");
+  const customPronunciationInput = document.getElementById("customPronunciation");
+  const addEditBtn = document.getElementById("addEditBtn");
+  const cancelEditBtn = document.getElementById("cancelEditBtn");
+  const customList = document.getElementById("customList");
+  const resetProgressBtn = document.getElementById("resetProgressBtn");
+  const darkModeToggle = document.getElementById("darkModeToggle");
+
+  // State
+  let customEntries = [];
+  let filteredItems = [];
+  let currentIndex = 0;
+  let recallMode = false;
+  let editingIndex = null; // null means adding new, otherwise editing custom entry index
+
+  // Initialize level filter options (1-50)
+  function initLevelFilter() {
+    for (let i = 1; i <= 50; i++) {
+      const opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = `Level ${i}`;
+      levelFilter.appendChild(opt);
+    }
+  }
+
+  // Load custom entries from localStorage
+  function loadCustomEntries() {
+    try {
+      const data = localStorage.getItem(LS_CUSTOM);
+      if (data) {
+        customEntries = JSON.parse(data);
+        if (!Array.isArray(customEntries)) customEntries = [];
+      } else {
+        customEntries = [];
+      }
+    } catch {
+      customEntries = [];
+    }
+  }
+
+  // Save custom entries to localStorage
+  function saveCustomEntries() {
+    localStorage.setItem(LS_CUSTOM, JSON.stringify(customEntries));
+  }
+
+  // Load progress (currentIndex, filters, recallMode) from localStorage
+  function loadProgress() {
+    try {
+      const data = localStorage.getItem(LS_PROGRESS);
+      if (data) {
+        const obj = JSON.parse(data);
+        if (typeof obj === "object" && obj !== null) {
+          if (typeof obj.currentIndex === "number") currentIndex = obj.currentIndex;
+          if (typeof obj.levelFilter === "string") levelFilter.value = obj.levelFilter;
+          if (typeof obj.sourceFilter === "string") sourceFilter.value = obj.sourceFilter;
+          if (typeof obj.recallMode === "boolean") {
+            recallMode = obj.recallMode;
+            modeToggle.checked = recallMode;
+          }
+        }
+      }
+    } catch {}
+  }
+
+  // Save progress to localStorage
+  function saveProgress() {
+    const obj = {
+      currentIndex,
+      levelFilter: levelFilter.value,
+      sourceFilter: sourceFilter.value,
+      recallMode,
+    };
+    localStorage.setItem(LS_PROGRESS, JSON.stringify(obj));
+  }
+
+  // Save dark mode preference
+  function saveDarkMode(isDark) {
+    localStorage.setItem(LS_DARKMODE, isDark ? "1" : "0");
+  }
+
+  // Load dark mode preference
+  function loadDarkMode() {
+    const val = localStorage.getItem(LS_DARKMODE);
+    if (val === "1") {
+      document.body.classList.add("dark");
+      darkModeToggle.textContent = "☀️";
+    } else {
+      document.body.classList.remove("dark");
+      darkModeToggle.textContent = "🌙";
+    }
+  }
+
+  // Filter items based on current filters
+  function filterItems() {
+    const levelVal = levelFilter.value;
+    const sourceVal = sourceFilter.value;
+
+    // Filter built-in by level
+    let builtInFiltered = builtInData;
+    if (levelVal !== "all") {
+      const lvl = parseInt(levelVal, 10);
+      builtInFiltered = builtInData.filter((item) => item.level === lvl);
+    }
+
+    // Filter custom by level (custom entries have no level, treat as all levels)
+    // We can optionally add level to custom entries, but spec doesn't require it.
+    // So custom entries always included if source includes custom.
+
+    let combined = [];
+    if (sourceVal === "built-in") {
+      combined = builtInFiltered;
+    } else if (sourceVal === "custom") {
+      combined = customEntries;
+    } else if (sourceVal === "both") {
+      combined = [...builtInFiltered, ...customEntries];
+    }
+
+    filteredItems = combined;
+    if (filteredItems.length === 0) {
+      currentIndex = 0;
+    } else if (currentIndex >= filteredItems.length) {
+      currentIndex = filteredItems.length - 1;
+    }
+  }
+
+  // Normalize strings for comparison (lowercase, remove accents, spaces, punctuation)
+  function normalize(str) {
+    return str
