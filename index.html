@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -98,7 +98,7 @@
             margin-bottom: 1rem;
         }
         
-        select, input {
+        select, input, textarea {
             padding: 0.75rem;
             border: 1px solid var(--border-light);
             border-radius: 6px;
@@ -108,7 +108,8 @@
         }
         
         body.dark-mode select, 
-        body.dark-mode input {
+        body.dark-mode input,
+        body.dark-mode textarea {
             border-color: var(--border-dark);
             background-color: var(--card-dark);
             color: var(--text-dark);
@@ -136,13 +137,24 @@
         .german-word {
             font-size: 2rem;
             font-weight: bold;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.5rem;
             color: var(--primary);
             min-height: 3rem;
         }
         
         body.dark-mode .german-word {
             color: #60a5fa;
+        }
+        
+        .english-translation {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+            font-style: italic;
+        }
+        
+        body.dark-mode .english-translation {
+            color: #94a3b8;
         }
         
         .pronunciation {
@@ -153,12 +165,7 @@
         }
         
         .pronunciation.hidden {
-            color: transparent;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-        }
-        
-        body.dark-mode .pronunciation.hidden {
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            display: none;
         }
         
         .action-buttons {
@@ -276,6 +283,13 @@
         .custom-item-german {
             font-weight: bold;
             margin-bottom: 0.25rem;
+        }
+        
+        .custom-item-english {
+            font-style: italic;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            color: var(--secondary);
         }
         
         .custom-item-pronunciation {
@@ -426,6 +440,23 @@
         .toggle-icon.open {
             transform: rotate(180deg);
         }
+        
+        .learning-mode {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .mode-description {
+            text-align: center;
+            font-style: italic;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        body.dark-mode .mode-description {
+            color: #94a3b8;
+        }
     </style>
 </head>
 <body>
@@ -462,21 +493,25 @@
         
         <!-- Learning card -->
         <div class="card">
-            <div class="german-word" id="germanWord"></div>
-            <div class="action-buttons">
-                <button class="btn-primary" id="speakBtn">Speak</button>
-                <button class="btn-secondary" id="revealBtn">Show Pronunciation</button>
-            </div>
-            
-            <div class="pronunciation hidden" id="pronunciation"></div>
-            
-            <div class="practice-area">
-                <input type="text" class="practice-input" id="practiceInput" placeholder="Type pronunciation here...">
+            <div class="learning-mode">
+                <div class="german-word" id="germanWord"></div>
+                <div class="english-translation" id="englishTranslation"></div>
+                
                 <div class="action-buttons">
-                    <button class="btn-success" id="checkBtn">Check</button>
-                    <button class="btn-secondary" id="clearBtn">Clear</button>
+                    <button class="btn-primary" id="speakBtn">Speak</button>
+                    <button class="btn-secondary" id="revealBtn">Show Pronunciation</button>
                 </div>
-                <div class="feedback" id="feedback"></div>
+                
+                <div class="pronunciation hidden" id="pronunciation"></div>
+                
+                <div class="practice-area">
+                    <input type="text" class="practice-input" id="practiceInput" placeholder="Type Tagalog pronunciation here...">
+                    <div class="action-buttons">
+                        <button class="btn-success" id="checkBtn">Check</button>
+                        <button class="btn-secondary" id="clearBtn">Clear</button>
+                    </div>
+                    <div class="feedback" id="feedback"></div>
+                </div>
             </div>
         </div>
         
@@ -498,6 +533,9 @@
             <div class="custom-form">
                 <div class="custom-form-row">
                     <input type="text" id="customGerman" placeholder="German word/phrase">
+                    <input type="text" id="customEnglish" placeholder="English translation">
+                </div>
+                <div class="custom-form-row">
                     <input type="text" id="customPronunciation" placeholder="Tagalog phonetic pronunciation">
                 </div>
                 <div class="action-buttons">
@@ -520,26 +558,26 @@
     </div>
 
     <script>
-        // Built-in dataset with German words/phrases and Tagalog phonetic pronunciations
+        // Built-in dataset with German words/phrases, English translations, and Tagalog phonetic pronunciations
         const builtInData = [
-            { german: "Haus", pronunciation: "haus", level: 1 },
-            { german: "Freund", pronunciation: "froynd", level: 2 },
-            { german: "Buch", pronunciation: "book", level: 3 },
-            { german: "Stadt", pronunciation: "shtat", level: 4 },
-            { german: "Land", pronunciation: "lant", level: 5 },
-            { german: "Wasser", pronunciation: "vah-ser", level: 6 },
-            { german: "Essen", pronunciation: "es-en", level: 7 },
-            { german: "Trinken", pronunciation: "trink-en", level: 8 },
-            { german: "Schule", pronunciation: "shoo-le", level: 9 },
-            { german: "Arbeit", pronunciation: "ar-bayt", level: 10 },
-            { german: "Entschuldigung", pronunciation: "ent-shool-dee-goong", level: 15 },
-            { german: "Wissenschaft", pronunciation: "vis-en-shahft", level: 20 },
-            { german: "Herausforderung", pronunciation: "he-rows-for-de-roong", level: 25 },
-            { german: "Verantwortung", pronunciation: "feer-ant-vor-toong", level: 30 },
-            { german: "Selbstverständlich", pronunciation: "zelpst-feer-shtend-likh", level: 35 },
-            { german: "Zusammenhang", pronunciation: "tsoo-zah-men-hang", level: 40 },
-            { german: "Unterschied", pronunciation: "oon-ter-sheeth", level: 45 },
-            { german: "Wiedersehen", pronunciation: "vee-der-zay-en", level: 50 }
+            { german: "Haus", english: "House", pronunciation: "haus", level: 1 },
+            { german: "Freund", english: "Friend", pronunciation: "froynd", level: 2 },
+            { german: "Buch", english: "Book", pronunciation: "book", level: 3 },
+            { german: "Stadt", english: "City", pronunciation: "shtat", level: 4 },
+            { german: "Land", english: "Country", pronunciation: "lant", level: 5 },
+            { german: "Wasser", english: "Water", pronunciation: "vah-ser", level: 6 },
+            { german: "Essen", english: "Food", pronunciation: "es-en", level: 7 },
+            { german: "Trinken", english: "Drink", pronunciation: "trink-en", level: 8 },
+            { german: "Schule", english: "School", pronunciation: "shoo-le", level: 9 },
+            { german: "Arbeit", english: "Work", pronunciation: "ar-bayt", level: 10 },
+            { german: "Entschuldigung", english: "Apology/Sorry", pronunciation: "ent-shool-dee-goong", level: 15 },
+            { german: "Wissenschaft", english: "Science", pronunciation: "vis-en-shahft", level: 20 },
+            { german: "Herausforderung", english: "Challenge", pronunciation: "he-rows-for-de-roong", level: 25 },
+            { german: "Verantwortung", english: "Responsibility", pronunciation: "feer-ant-vor-toong", level: 30 },
+            { german: "Selbstverständlich", english: "Of course/Naturally", pronunciation: "zelpst-feer-shtend-likh", level: 35 },
+            { german: "Zusammenhang", english: "Connection", pronunciation: "tsoo-zah-men-hang", level: 40 },
+            { german: "Unterschied", english: "Difference", pronunciation: "oon-ter-sheeth", level: 45 },
+            { german: "Wiedersehen", english: "Goodbye/See you again", pronunciation: "vee-der-zay-en", level: 50 }
         ];
 
         // DOM Elements
@@ -547,6 +585,7 @@
         const sourceFilter = document.getElementById('sourceFilter');
         const modeToggle = document.getElementById('modeToggle');
         const germanWordEl = document.getElementById('germanWord');
+        const englishTranslationEl = document.getElementById('englishTranslation');
         const pronunciationEl = document.getElementById('pronunciation');
         const revealBtn = document.getElementById('revealBtn');
         const speakBtn = document.getElementById('speakBtn');
@@ -558,6 +597,7 @@
         const nextBtn = document.getElementById('nextBtn');
         const progressIndicator = document.getElementById('progressIndicator');
         const customGermanInput = document.getElementById('customGerman');
+        const customEnglishInput = document.getElementById('customEnglish');
         const customPronunciationInput = document.getElementById('customPronunciation');
         const addBtn = document.getElementById('addBtn');
         const saveEditsBtn = document.getElementById('saveEditsBtn');
@@ -575,6 +615,7 @@
         let recallMode = false;
         let editingIndex = -1;
         let customSectionOpen = false;
+        let answerRevealed = false;
 
         // Initialize the app
         function init() {
@@ -709,33 +750,36 @@
 
         // Update the display with current item
         function updateDisplay() {
+            answerRevealed = false;
+            
             if (filteredItems.length === 0) {
                 germanWordEl.textContent = 'No items to display';
+                englishTranslationEl.textContent = '';
                 pronunciationEl.textContent = '';
                 pronunciationEl.classList.add('hidden');
                 revealBtn.disabled = true;
                 speakBtn.disabled = true;
+                practiceInput.disabled = true;
+                checkBtn.disabled = true;
                 progressIndicator.textContent = 'Item 0 of 0';
                 return;
             }
             
             const currentItem = filteredItems[currentIndex];
             germanWordEl.textContent = currentItem.german;
+            englishTranslationEl.textContent = currentItem.english;
             
-            // In recall mode, pronunciation starts hidden
+            // Always hide pronunciation initially
             pronunciationEl.textContent = currentItem.pronunciation;
-            if (recallMode) {
-                pronunciationEl.classList.add('hidden');
-                revealBtn.disabled = false;
-            } else {
-                pronunciationEl.classList.remove('hidden');
-                revealBtn.disabled = true;
-            }
+            pronunciationEl.classList.add('hidden');
+            revealBtn.disabled = false;
             
             // Clear previous input and feedback
             practiceInput.value = '';
             feedbackEl.textContent = '';
             feedbackEl.classList.remove('correct', 'incorrect');
+            practiceInput.disabled = false;
+            checkBtn.disabled = false;
             
             // Update progress indicator
             progressIndicator.textContent = `Item ${currentIndex + 1} of ${filteredItems.length}`;
@@ -773,11 +817,16 @@
                 germanText.className = 'custom-item-german';
                 germanText.textContent = entry.german;
                 
+                const englishText = document.createElement('div');
+                englishText.className = 'custom-item-english';
+                englishText.textContent = entry.english;
+                
                 const pronunciationText = document.createElement('div');
                 pronunciationText.className = 'custom-item-pronunciation';
                 pronunciationText.textContent = entry.pronunciation;
                 
                 content.appendChild(germanText);
+                content.appendChild(englishText);
                 content.appendChild(pronunciationText);
                 
                 const actions = document.createElement('div');
@@ -806,15 +855,17 @@
         // Add a new custom entry
         function addCustomEntry() {
             const german = customGermanInput.value.trim();
+            const english = customEnglishInput.value.trim();
             const pronunciation = customPronunciationInput.value.trim();
             
-            if (!german || !pronunciation) {
-                alert('Please enter both German and pronunciation.');
+            if (!german || !english || !pronunciation) {
+                alert('Please enter German word, English translation, and pronunciation.');
                 return;
             }
             
             customEntries.push({
                 german,
+                english,
                 pronunciation,
                 level: 0 // Custom entries have level 0
             });
@@ -834,6 +885,7 @@
         function editCustomEntry(index) {
             const entry = customEntries[index];
             customGermanInput.value = entry.german;
+            customEnglishInput.value = entry.english;
             customPronunciationInput.value = entry.pronunciation;
             
             editingIndex = index;
@@ -848,15 +900,17 @@
             if (editingIndex === -1) return;
             
             const german = customGermanInput.value.trim();
+            const english = customEnglishInput.value.trim();
             const pronunciation = customPronunciationInput.value.trim();
             
-            if (!german || !pronunciation) {
-                alert('Please enter both German and pronunciation.');
+            if (!german || !english || !pronunciation) {
+                alert('Please enter German word, English translation, and pronunciation.');
                 return;
             }
             
             customEntries[editingIndex] = {
                 german,
+                english,
                 pronunciation,
                 level: 0
             };
@@ -900,6 +954,7 @@
         // Clear the custom entry form
         function clearCustomForm() {
             customGermanInput.value = '';
+            customEnglishInput.value = '';
             customPronunciationInput.value = '';
         }
 
@@ -918,6 +973,12 @@
         function checkPronunciation() {
             if (filteredItems.length === 0) return;
             
+            // If answer hasn't been revealed yet, show it first
+            if (!answerRevealed) {
+                revealPronunciation();
+                return;
+            }
+            
             const userInput = practiceInput.value.trim().toLowerCase();
             const correctPronunciation = filteredItems[currentIndex].pronunciation.toLowerCase();
             
@@ -928,6 +989,13 @@
             if (normalizedUser === normalizedCorrect) {
                 feedbackEl.textContent = 'Correct!';
                 feedbackEl.className = 'feedback correct';
+                
+                // Auto-advance after correct answer
+                setTimeout(() => {
+                    if (currentIndex < filteredItems.length - 1) {
+                        nextItem();
+                    }
+                }, 1000);
             } else {
                 feedbackEl.textContent = 'Incorrect. Try again.';
                 feedbackEl.className = 'feedback incorrect';
@@ -945,6 +1013,10 @@
         function revealPronunciation() {
             pronunciationEl.classList.remove('hidden');
             revealBtn.disabled = true;
+            answerRevealed = true;
+            
+            // Change check button text to "Next" when answer is revealed
+            checkBtn.textContent = 'Next';
         }
 
         // Navigate to the previous item
@@ -953,6 +1025,7 @@
                 currentIndex--;
                 saveProgress();
                 updateDisplay();
+                checkBtn.textContent = 'Check';
             }
         }
 
@@ -962,6 +1035,7 @@
                 currentIndex++;
                 saveProgress();
                 updateDisplay();
+                checkBtn.textContent = 'Check';
             }
         }
 
@@ -1034,6 +1108,16 @@
             
             // Allow Enter key in custom form fields
             customGermanInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    if (editingIndex === -1) {
+                        addCustomEntry();
+                    } else {
+                        updateCustomEntry();
+                    }
+                }
+            });
+            
+            customEnglishInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     if (editingIndex === -1) {
                         addCustomEntry();
