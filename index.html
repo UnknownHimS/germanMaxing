@@ -12,6 +12,7 @@
             --success: #16a34a;
             --danger: #dc2626;
             --warning: #d97706;
+            --info: #0ea5e9;
             --bg-light: #f8fafc;
             --text-light: #1e293b;
             --card-light: #ffffff;
@@ -137,6 +138,7 @@
             font-weight: bold;
             margin-bottom: 1.5rem;
             color: var(--primary);
+            min-height: 3rem;
         }
         
         body.dark-mode .german-word {
@@ -164,6 +166,7 @@
             gap: 0.5rem;
             justify-content: center;
             margin-bottom: 1.5rem;
+            flex-wrap: wrap;
         }
         
         .practice-area {
@@ -216,6 +219,27 @@
             background-color: var(--card-dark);
         }
         
+        .custom-form {
+            margin-bottom: 1rem;
+        }
+        
+        .custom-form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        @media (min-width: 640px) {
+            .custom-form-row {
+                flex-direction: row;
+            }
+            
+            .custom-form-row > * {
+                flex: 1;
+            }
+        }
+        
         .custom-list {
             max-height: 200px;
             overflow-y: auto;
@@ -232,7 +256,8 @@
         .custom-item {
             display: flex;
             justify-content: space-between;
-            padding: 0.5rem;
+            align-items: center;
+            padding: 0.75rem;
             border-bottom: 1px solid var(--border-light);
         }
         
@@ -242,6 +267,24 @@
         
         .custom-item:last-child {
             border-bottom: none;
+        }
+        
+        .custom-item-content {
+            flex: 1;
+        }
+        
+        .custom-item-german {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+        
+        .custom-item-pronunciation {
+            font-style: italic;
+            color: var(--secondary);
+        }
+        
+        body.dark-mode .custom-item-pronunciation {
+            color: #94a3b8;
         }
         
         .custom-item-actions {
@@ -275,9 +318,17 @@
             color: white;
         }
         
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+        
         .btn-success {
             background-color: var(--success);
             color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #15803d;
         }
         
         .btn-danger {
@@ -285,14 +336,37 @@
             color: white;
         }
         
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
+        
         .btn-warning {
             background-color: var(--warning);
             color: white;
         }
         
+        .btn-warning:hover {
+            background-color: #b45309;
+        }
+        
+        .btn-info {
+            background-color: var(--info);
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background-color: #0284c7;
+        }
+        
         button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+        
+        .btn-small {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            min-height: auto;
         }
         
         /* Reset section */
@@ -316,6 +390,41 @@
             .filter-group > * {
                 flex: 1;
             }
+        }
+        
+        /* Add custom section toggle */
+        .section-toggle {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        
+        .section-toggle:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .section-content {
+            display: none;
+        }
+        
+        .section-content.open {
+            display: block;
+        }
+        
+        .toggle-icon {
+            transition: transform 0.3s;
+        }
+        
+        .toggle-icon.open {
+            transform: rotate(180deg);
         }
     </style>
 </head>
@@ -354,10 +463,12 @@
         <!-- Learning card -->
         <div class="card">
             <div class="german-word" id="germanWord"></div>
-            <button class="btn-primary" id="speakBtn">Speak</button>
+            <div class="action-buttons">
+                <button class="btn-primary" id="speakBtn">Speak</button>
+                <button class="btn-secondary" id="revealBtn">Show Pronunciation</button>
+            </div>
             
             <div class="pronunciation hidden" id="pronunciation"></div>
-            <button class="btn-secondary" id="revealBtn">Show Pronunciation</button>
             
             <div class="practice-area">
                 <input type="text" class="practice-input" id="practiceInput" placeholder="Type pronunciation here...">
@@ -376,19 +487,27 @@
             <button class="btn-primary" id="nextBtn">Next</button>
         </div>
         
-        <!-- Custom entries -->
-        <div class="custom-section">
-            <h2>Custom Entries</h2>
-            <div class="filter-group">
-                <input type="text" id="customGerman" placeholder="German word/phrase">
-                <input type="text" id="customPronunciation" placeholder="Tagalog phonetic pronunciation">
-            </div>
-            <div class="action-buttons">
-                <button class="btn-success" id="addBtn">Add</button>
-                <button class="btn-warning" id="updateBtn" style="display: none;">Update</button>
-                <button class="btn-secondary" id="cancelBtn" style="display: none;">Cancel</button>
+        <!-- Custom entries section with toggle -->
+        <button class="section-toggle" id="customSectionToggle">
+            <span>Custom Entries</span>
+            <span class="toggle-icon">▼</span>
+        </button>
+        
+        <div class="section-content" id="customSection">
+            <!-- Custom entries form -->
+            <div class="custom-form">
+                <div class="custom-form-row">
+                    <input type="text" id="customGerman" placeholder="German word/phrase">
+                    <input type="text" id="customPronunciation" placeholder="Tagalog phonetic pronunciation">
+                </div>
+                <div class="action-buttons">
+                    <button class="btn-success" id="addBtn">Add New Entry</button>
+                    <button class="btn-info" id="saveEditsBtn" style="display: none;">Save Changes</button>
+                    <button class="btn-secondary" id="cancelBtn" style="display: none;">Cancel</button>
+                </div>
             </div>
             
+            <!-- Custom entries list -->
             <div class="custom-list" id="customList">
                 <!-- Custom entries will appear here -->
             </div>
@@ -441,11 +560,13 @@
         const customGermanInput = document.getElementById('customGerman');
         const customPronunciationInput = document.getElementById('customPronunciation');
         const addBtn = document.getElementById('addBtn');
-        const updateBtn = document.getElementById('updateBtn');
+        const saveEditsBtn = document.getElementById('saveEditsBtn');
         const cancelBtn = document.getElementById('cancelBtn');
         const customList = document.getElementById('customList');
         const resetBtn = document.getElementById('resetBtn');
         const darkModeToggle = document.getElementById('darkModeToggle');
+        const customSectionToggle = document.getElementById('customSectionToggle');
+        const customSection = document.getElementById('customSection');
 
         // App state
         let customEntries = [];
@@ -453,6 +574,7 @@
         let currentIndex = 0;
         let recallMode = false;
         let editingIndex = -1;
+        let customSectionOpen = false;
 
         // Initialize the app
         function init() {
@@ -460,6 +582,7 @@
             loadCustomEntries();
             loadProgress();
             loadDarkMode();
+            loadCustomSectionState();
             
             // Populate level filter
             for (let i = 1; i <= 50; i++) {
@@ -528,6 +651,31 @@
             document.body.classList.toggle('dark-mode', isDarkMode);
             localStorage.setItem('germanTagalogDarkMode', isDarkMode);
             darkModeToggle.textContent = isDarkMode ? '☀️' : '🌙';
+        }
+
+        // Load custom section state
+        function loadCustomSectionState() {
+            const isOpen = localStorage.getItem('germanTagalogCustomSectionOpen') === 'true';
+            toggleCustomSection(isOpen);
+        }
+
+        // Save custom section state
+        function saveCustomSectionState() {
+            localStorage.setItem('germanTagalogCustomSectionOpen', customSectionOpen);
+        }
+
+        // Toggle custom section visibility
+        function toggleCustomSection(forceState) {
+            if (forceState !== undefined) {
+                customSectionOpen = forceState;
+            } else {
+                customSectionOpen = !customSectionOpen;
+            }
+            
+            customSection.classList.toggle('open', customSectionOpen);
+            const toggleIcon = customSectionToggle.querySelector('.toggle-icon');
+            toggleIcon.classList.toggle('open', customSectionOpen);
+            saveCustomSectionState();
         }
 
         // Apply filters based on user selections
@@ -618,26 +766,37 @@
                 const item = document.createElement('div');
                 item.className = 'custom-item';
                 
-                const text = document.createElement('div');
-                text.textContent = `${entry.german} - ${entry.pronunciation}`;
+                const content = document.createElement('div');
+                content.className = 'custom-item-content';
+                
+                const germanText = document.createElement('div');
+                germanText.className = 'custom-item-german';
+                germanText.textContent = entry.german;
+                
+                const pronunciationText = document.createElement('div');
+                pronunciationText.className = 'custom-item-pronunciation';
+                pronunciationText.textContent = entry.pronunciation;
+                
+                content.appendChild(germanText);
+                content.appendChild(pronunciationText);
                 
                 const actions = document.createElement('div');
                 actions.className = 'custom-item-actions';
                 
                 const editBtn = document.createElement('button');
-                editBtn.className = 'btn-secondary';
+                editBtn.className = 'btn-info btn-small';
                 editBtn.textContent = 'Edit';
                 editBtn.onclick = () => editCustomEntry(index);
                 
                 const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'btn-danger';
+                deleteBtn.className = 'btn-danger btn-small';
                 deleteBtn.textContent = 'Delete';
                 deleteBtn.onclick = () => deleteCustomEntry(index);
                 
                 actions.appendChild(editBtn);
                 actions.appendChild(deleteBtn);
                 
-                item.appendChild(text);
+                item.appendChild(content);
                 item.appendChild(actions);
                 
                 customList.appendChild(item);
@@ -680,7 +839,7 @@
             editingIndex = index;
             
             addBtn.style.display = 'none';
-            updateBtn.style.display = 'inline-block';
+            saveEditsBtn.style.display = 'inline-block';
             cancelBtn.style.display = 'inline-block';
         }
 
@@ -734,7 +893,7 @@
             clearCustomForm();
             
             addBtn.style.display = 'inline-block';
-            updateBtn.style.display = 'none';
+            saveEditsBtn.style.display = 'none';
             cancelBtn.style.display = 'none';
         }
 
@@ -821,7 +980,7 @@
                 
                 clearCustomForm();
                 addBtn.style.display = 'inline-block';
-                updateBtn.style.display = 'none';
+                saveEditsBtn.style.display = 'none';
                 cancelBtn.style.display = 'none';
                 
                 applyFilters();
@@ -870,7 +1029,7 @@
             
             // Custom entry events
             addBtn.addEventListener('click', addCustomEntry);
-            updateBtn.addEventListener('click', updateCustomEntry);
+            saveEditsBtn.addEventListener('click', updateCustomEntry);
             cancelBtn.addEventListener('click', cancelEdit);
             
             // Allow Enter key in custom form fields
@@ -899,6 +1058,9 @@
             
             // Dark mode toggle
             darkModeToggle.addEventListener('click', toggleDarkMode);
+            
+            // Custom section toggle
+            customSectionToggle.addEventListener('click', () => toggleCustomSection());
         }
 
         // Initialize the app when the DOM is loaded
