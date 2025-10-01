@@ -1,466 +1,908 @@
 <!DOCTYPE html>
 <html lang="tl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>German-Tagalog Advanced Learner</title>
-<style>
-  :root {
-    --bg-light: #f9f9f9;
-    --text-light: #222;
-    --btn-bg-light: #007bff;
-    --btn-bg-light-hover: #0056b3;
-    --card-bg-light: #fff;
-    --border-light: #ccc;
-
-    --bg-dark: #121212;
-    --text-dark: #eee;
-    --btn-bg-dark: #1a73e8;
-    --btn-bg-dark-hover: #135ab6;
-    --card-bg-dark: #1e1e1e;
-    --border-dark: #444;
-  }
-  body {
-    margin: 0; padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-    background: var(--bg-light);
-    color: var(--text-light);
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    -webkit-tap-highlight-color: transparent;
-  }
-  body.dark {
-    background: var(--bg-dark);
-    color: var(--text-dark);
-  }
-  header {
-    padding: 1rem;
-    text-align: center;
-    font-weight: 700;
-    font-size: 1.4rem;
-    background: var(--btn-bg-light);
-    color: white;
-  }
-  body.dark header {
-    background: var(--btn-bg-dark);
-  }
-  main {
-    flex: 1;
-    padding: 0.75rem 1rem 1rem;
-    max-width: 600px;
-    margin: 0 auto;
-    width: 100%;
-  }
-  .controls, .navigation, .mode-toggle, .reset-section {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    justify-content: center;
-  }
-  select, input[type="text"] {
-    font-size: 1.1rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 6px;
-    border: 1.5px solid var(--border-light);
-    flex-grow: 1;
-    min-width: 120px;
-    background: var(--card-bg-light);
-    color: var(--text-light);
-  }
-  body.dark select, body.dark input[type="text"] {
-    background: var(--card-bg-dark);
-    border-color: var(--border-dark);
-    color: var(--text-dark);
-  }
-  button {
-    font-size: 1.1rem;
-    padding: 0.6rem 1rem;
-    border-radius: 8px;
-    border: none;
-    background: var(--btn-bg-light);
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    flex-shrink: 0;
-    user-select: none;
-    transition: background-color 0.2s ease;
-  }
-  button:disabled {
-    background: #999;
-    cursor: default;
-  }
-  button:hover:not(:disabled),
-  button:focus-visible:not(:disabled) {
-    background: var(--btn-bg-light-hover);
-    outline: none;
-  }
-  body.dark button {
-    background: var(--btn-bg-dark);
-  }
-  body.dark button:hover:not(:disabled),
-  body.dark button:focus-visible:not(:disabled) {
-    background: var(--btn-bg-dark-hover);
-  }
-  .card {
-    background: var(--card-bg-light);
-    border-radius: 12px;
-    padding: 1rem 1.25rem;
-    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
-    margin-bottom: 1rem;
-    user-select: none;
-  }
-  body.dark .card {
-    background: var(--card-bg-dark);
-    box-shadow: 0 2px 8px rgb(255 255 255 / 0.1);
-  }
-  .german-word {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    user-select: text;
-  }
-  .pronunciation {
-    font-size: 1.3rem;
-    font-style: italic;
-    margin-bottom: 0.75rem;
-    user-select: text;
-    min-height: 1.6em;
-  }
-  .pronunciation.hidden {
-    color: transparent;
-    text-shadow: 0 0 8px rgba(0,0,0,0.3);
-    user-select: none;
-  }
-  .input-group {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-  }
-  .input-group input[type="text"] {
-    flex-grow: 1;
-  }
-  .feedback {
-    font-weight: 600;
-    min-height: 1.4em;
-    user-select: none;
-  }
-  .feedback.correct {
-    color: #28a745;
-  }
-  .feedback.incorrect {
-    color: #dc3545;
-  }
-  .progress {
-    text-align: center;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    user-select: none;
-  }
-  .filter-group {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 1rem;
-  }
-  label {
-    user-select: none;
-    font-weight: 600;
-  }
-  .custom-list {
-    max-height: 150px;
-    overflow-y: auto;
-    border: 1px solid var(--border-light);
-    border-radius: 8px;
-    padding: 0.5rem;
-    background: var(--card-bg-light);
-  }
-  body.dark .custom-list {
-    background: var(--card-bg-dark);
-    border-color: var(--border-dark);
-  }
-  .custom-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.95rem;
-    padding: 0.25rem 0.5rem;
-    border-bottom: 1px solid var(--border-light);
-  }
-  body.dark .custom-item {
-    border-color: var(--border-dark);
-  }
-  .custom-item:last-child {
-    border-bottom: none;
-  }
-  .custom-item span {
-    flex-grow: 1;
-    user-select: text;
-  }
-  .custom-item button {
-    font-size: 0.9rem;
-    padding: 0.25rem 0.5rem;
-    margin-left: 0.3rem;
-  }
-  .add-edit-form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    justify-content: center;
-  }
-  .add-edit-form input[type="text"] {
-    flex-grow: 1;
-    min-width: 120px;
-  }
-  .dark-toggle {
-    margin-left: auto;
-    user-select: none;
-  }
-  @media (max-width: 400px) {
-    .input-group {
-      flex-direction: column;
-    }
-    .add-edit-form {
-      flex-direction: column;
-    }
-    button {
-      width: 100%;
-    }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>German-Tagalog Advanced Learner</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --bg-light: #f8fafc;
+            --text-light: #1e293b;
+            --card-light: #ffffff;
+            --border-light: #e2e8f0;
+            
+            --bg-dark: #0f172a;
+            --text-dark: #f1f5f9;
+            --card-dark: #1e293b;
+            --border-dark: #334155;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 1rem;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        header h1 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+        
+        header .dark-mode-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        /* Controls */
+        .controls {
+            background-color: var(--card-light);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        body.dark-mode .controls {
+            background-color: var(--card-dark);
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        select, input {
+            padding: 0.75rem;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: var(--card-light);
+            color: var(--text-light);
+        }
+        
+        body.dark-mode select, 
+        body.dark-mode input {
+            border-color: var(--border-dark);
+            background-color: var(--card-dark);
+            color: var(--text-dark);
+        }
+        
+        label {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        /* Card */
+        .card {
+            background-color: var(--card-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        body.dark-mode .card {
+            background-color: var(--card-dark);
+        }
+        
+        .german-word {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+        
+        body.dark-mode .german-word {
+            color: #60a5fa;
+        }
+        
+        .pronunciation {
+            font-size: 1.5rem;
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            min-height: 2.5rem;
+        }
+        
+        .pronunciation.hidden {
+            color: transparent;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        body.dark-mode .pronunciation.hidden {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .practice-area {
+            margin-top: 1rem;
+        }
+        
+        .practice-input {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feedback {
+            font-weight: bold;
+            min-height: 1.5rem;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+        
+        .feedback.correct {
+            color: var(--success);
+        }
+        
+        .feedback.incorrect {
+            color: var(--danger);
+        }
+        
+        /* Navigation */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1rem 0;
+        }
+        
+        .progress {
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        /* Custom entries */
+        .custom-section {
+            background-color: var(--card-light);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        body.dark-mode .custom-section {
+            background-color: var(--card-dark);
+        }
+        
+        .custom-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 1rem 0;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            padding: 0.5rem;
+        }
+        
+        body.dark-mode .custom-list {
+            border-color: var(--border-dark);
+        }
+        
+        .custom-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        body.dark-mode .custom-item {
+            border-color: var(--border-dark);
+        }
+        
+        .custom-item:last-child {
+            border-bottom: none;
+        }
+        
+        .custom-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        /* Buttons */
+        button {
+            padding: 0.75rem 1.25rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            min-height: 44px; /* Minimum touch target size */
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Reset section */
+        .reset-section {
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        /* Responsive */
+        @media (min-width: 640px) {
+            .container {
+                max-width: 600px;
+                padding: 1.5rem;
+            }
+            
+            .filter-group {
+                flex-direction: row;
+                align-items: center;
+            }
+            
+            .filter-group > * {
+                flex: 1;
+            }
+        }
+    </style>
 </head>
 <body>
-<header>
-  German-Tagalog Advanced Learner
-  <button id="darkModeToggle" class="dark-toggle" aria-label="Toggle Dark Mode" title="Toggle Dark Mode" style="margin-left:1rem; font-size:1rem; padding:0.3rem 0.6rem;">🌙</button>
-</header>
-<main>
-  <section class="controls" aria-label="Filter and source selection">
-    <label for="levelFilter">Level:</label>
-    <select id="levelFilter" aria-describedby="levelHelp" title="Filter by difficulty level">
-      <option value="all">Lahat ng Level</option>
-    </select>
-
-    <label for="sourceFilter">Pinagmulan:</label>
-    <select id="sourceFilter" aria-describedby="sourceHelp" title="Choose source of study items">
-      <option value="built-in">Built-in</option>
-      <option value="custom">Custom</option>
-      <option value="both" selected>Pinagsama</option>
-    </select>
-
-    <label for="modeToggle" style="align-self:center; font-weight:600; cursor:pointer;">
-      <input type="checkbox" id="modeToggle" title="Toggle Recall Mode" aria-label="Toggle Recall Mode" />
-      Recall Mode
-    </label>
-  </section>
-
-  <section class="card" aria-live="polite" aria-atomic="true" aria-relevant="additions removals">
-    <div class="german-word" id="germanWord" tabindex="0" aria-label="German word or phrase"></div>
-    <button id="revealBtn" aria-pressed="false" aria-label="Ipakita ang tamang pagbigkas sa Tagalog" style="margin-bottom:0.75rem;">Ipakita ang Pagbigkas</button>
-    <div class="pronunciation hidden" id="pronunciation" aria-live="polite" aria-atomic="true"></div>
-
-    <form id="practiceForm" class="input-group" aria-label="Practice typing the pronunciation">
-      <input type="text" id="practiceInput" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" placeholder="I-type ang pagbigkas dito..." aria-describedby="feedback" aria-label="Type the Tagalog phonetic pronunciation" />
-      <button type="submit" id="checkBtn" aria-label="Suriin ang sagot">Suriin</button>
-    </form>
-    <div id="feedback" class="feedback" aria-live="assertive" role="alert"></div>
-  </section>
-
-  <section class="navigation" aria-label="Navigation controls">
-    <button id="prevBtn" aria-label="Previous item">← Nakaraan</button>
-    <div class="progress" id="progressIndicator" aria-live="polite" aria-atomic="true">Item 0 ng 0</div>
-    <button id="nextBtn" aria-label="Next item">Susunod →</button>
-  </section>
-
-  <section aria-label="Add or edit custom entries" style="margin-bottom:1rem;">
-    <form id="addEditForm" class="add-edit-form" aria-describedby="addEditHelp" novalidate>
-      <input type="text" id="customGerman" placeholder="German word/phrase" aria-label="German word or phrase" required />
-      <input type="text" id="customPronunciation" placeholder="Tagalog phonetic pronunciation" aria-label="Tagalog phonetic pronunciation" required />
-      <button type="submit" id="addEditBtn" aria-label="Add or update custom entry">Idagdag</button>
-      <button type="button" id="cancelEditBtn" aria-label="Cancel editing" style="display:none; background:#dc3545;">Kanselahin</button>
-    </form>
-    <small id="addEditHelp" style="display:block; text-align:center; color:#666; font-size:0.85rem;">
-      Magdagdag o i-edit ang sarili mong mga salita at pagbigkas.
-    </small>
-  </section>
-
-  <section aria-label="Custom entries list">
-    <div class="custom-list" id="customList" tabindex="0" aria-live="polite" aria-atomic="true" aria-relevant="additions removals">
-      <!-- Custom entries appear here -->
+    <header>
+        <h1>German-Tagalog Advanced Learner</h1>
+        <button class="dark-mode-toggle" id="darkModeToggle">🌙</button>
+    </header>
+    
+    <div class="container">
+        <!-- Controls section -->
+        <div class="controls">
+            <div class="filter-group">
+                <div>
+                    <label for="levelFilter">Level:</label>
+                    <select id="levelFilter">
+                        <option value="all">All Levels</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="sourceFilter">Source:</label>
+                    <select id="sourceFilter">
+                        <option value="built-in">Built-in</option>
+                        <option value="custom">Custom</option>
+                        <option value="both" selected>Both</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label for="modeToggle">
+                    <input type="checkbox" id="modeToggle"> Recall Mode
+                </label>
+            </div>
+        </div>
+        
+        <!-- Learning card -->
+        <div class="card">
+            <div class="german-word" id="germanWord"></div>
+            <button class="btn-primary" id="speakBtn">Speak</button>
+            
+            <div class="pronunciation hidden" id="pronunciation"></div>
+            <button class="btn-secondary" id="revealBtn">Show Pronunciation</button>
+            
+            <div class="practice-area">
+                <input type="text" class="practice-input" id="practiceInput" placeholder="Type pronunciation here...">
+                <div class="action-buttons">
+                    <button class="btn-success" id="checkBtn">Check</button>
+                    <button class="btn-secondary" id="clearBtn">Clear</button>
+                </div>
+                <div class="feedback" id="feedback"></div>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="btn-primary" id="prevBtn">Previous</button>
+            <div class="progress" id="progressIndicator">Item 0 of 0</div>
+            <button class="btn-primary" id="nextBtn">Next</button>
+        </div>
+        
+        <!-- Custom entries -->
+        <div class="custom-section">
+            <h2>Custom Entries</h2>
+            <div class="filter-group">
+                <input type="text" id="customGerman" placeholder="German word/phrase">
+                <input type="text" id="customPronunciation" placeholder="Tagalog phonetic pronunciation">
+            </div>
+            <div class="action-buttons">
+                <button class="btn-success" id="addBtn">Add</button>
+                <button class="btn-warning" id="updateBtn" style="display: none;">Update</button>
+                <button class="btn-secondary" id="cancelBtn" style="display: none;">Cancel</button>
+            </div>
+            
+            <div class="custom-list" id="customList">
+                <!-- Custom entries will appear here -->
+            </div>
+        </div>
+        
+        <!-- Reset section -->
+        <div class="reset-section">
+            <button class="btn-danger" id="resetBtn">Reset All Data</button>
+        </div>
     </div>
-  </section>
 
-  <section class="reset-section" aria-label="Reset user data">
-    <button id="resetProgressBtn" aria-label="Reset progress and custom entries" style="background:#dc3545;">I-reset ang Lahat</button>
-  </section>
-</main>
+    <script>
+        // Built-in dataset with German words/phrases and Tagalog phonetic pronunciations
+        const builtInData = [
+            { german: "Haus", pronunciation: "haus", level: 1 },
+            { german: "Freund", pronunciation: "froynd", level: 2 },
+            { german: "Buch", pronunciation: "book", level: 3 },
+            { german: "Stadt", pronunciation: "shtat", level: 4 },
+            { german: "Land", pronunciation: "lant", level: 5 },
+            { german: "Wasser", pronunciation: "vah-ser", level: 6 },
+            { german: "Essen", pronunciation: "es-en", level: 7 },
+            { german: "Trinken", pronunciation: "trink-en", level: 8 },
+            { german: "Schule", pronunciation: "shoo-le", level: 9 },
+            { german: "Arbeit", pronunciation: "ar-bayt", level: 10 },
+            { german: "Entschuldigung", pronunciation: "ent-shool-dee-goong", level: 15 },
+            { german: "Wissenschaft", pronunciation: "vis-en-shahft", level: 20 },
+            { german: "Herausforderung", pronunciation: "he-rows-for-de-roong", level: 25 },
+            { german: "Verantwortung", pronunciation: "feer-ant-vor-toong", level: 30 },
+            { german: "Selbstverständlich", pronunciation: "zelpst-feer-shtend-likh", level: 35 },
+            { german: "Zusammenhang", pronunciation: "tsoo-zah-men-hang", level: 40 },
+            { german: "Unterschied", pronunciation: "oon-ter-sheeth", level: 45 },
+            { german: "Wiedersehen", pronunciation: "vee-der-zay-en", level: 50 }
+        ];
 
-<script>
-(() => {
-  "use strict";
+        // DOM Elements
+        const levelFilter = document.getElementById('levelFilter');
+        const sourceFilter = document.getElementById('sourceFilter');
+        const modeToggle = document.getElementById('modeToggle');
+        const germanWordEl = document.getElementById('germanWord');
+        const pronunciationEl = document.getElementById('pronunciation');
+        const revealBtn = document.getElementById('revealBtn');
+        const speakBtn = document.getElementById('speakBtn');
+        const practiceInput = document.getElementById('practiceInput');
+        const checkBtn = document.getElementById('checkBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const feedbackEl = document.getElementById('feedback');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressIndicator = document.getElementById('progressIndicator');
+        const customGermanInput = document.getElementById('customGerman');
+        const customPronunciationInput = document.getElementById('customPronunciation');
+        const addBtn = document.getElementById('addBtn');
+        const updateBtn = document.getElementById('updateBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const customList = document.getElementById('customList');
+        const resetBtn = document.getElementById('resetBtn');
+        const darkModeToggle = document.getElementById('darkModeToggle');
 
-  // Built-in dataset: German word/phrase + Tagalog phonetic pronunciation + level (1-50)
-  // For demo, a small sample; in real app, expand to 50+ items.
-  const builtInData = [
-    { german: "Haus", pronunciation: "haus", level: 1 },
-    { german: "Freund", pronunciation: "froind", level: 2 },
-    { german: "Entschuldigung", pronunciation: "entshuldigung", level: 10 },
-    { german: "Wissenschaft", pronunciation: "vissenshaft", level: 20 },
-    { german: "Herausforderung", pronunciation: "heraousforderung", level: 30 },
-    { german: "Verantwortung", pronunciation: "ferantvortung", level: 40 },
-    { german: "Selbstverständlich", pronunciation: "zelpstfershtehend", level: 50 },
-    // Add more items here up to level 50...
-  ];
+        // App state
+        let customEntries = [];
+        let filteredItems = [];
+        let currentIndex = 0;
+        let recallMode = false;
+        let editingIndex = -1;
 
-  // Constants for localStorage keys
-  const LS_CUSTOM = "germanTagalogCustomEntries";
-  const LS_PROGRESS = "germanTagalogProgress";
-  const LS_DARKMODE = "germanTagalogDarkMode";
-
-  // Elements
-  const levelFilter = document.getElementById("levelFilter");
-  const sourceFilter = document.getElementById("sourceFilter");
-  const modeToggle = document.getElementById("modeToggle");
-  const germanWordEl = document.getElementById("germanWord");
-  const pronunciationEl = document.getElementById("pronunciation");
-  const revealBtn = document.getElementById("revealBtn");
-  const practiceForm = document.getElementById("practiceForm");
-  const practiceInput = document.getElementById("practiceInput");
-  const checkBtn = document.getElementById("checkBtn");
-  const feedbackEl = document.getElementById("feedback");
-  const prevBtn = document.getElementById("prevBtn");
-  const nextBtn = document.getElementById("nextBtn");
-  const progressIndicator = document.getElementById("progressIndicator");
-  const addEditForm = document.getElementById("addEditForm");
-  const customGermanInput = document.getElementById("customGerman");
-  const customPronunciationInput = document.getElementById("customPronunciation");
-  const addEditBtn = document.getElementById("addEditBtn");
-  const cancelEditBtn = document.getElementById("cancelEditBtn");
-  const customList = document.getElementById("customList");
-  const resetProgressBtn = document.getElementById("resetProgressBtn");
-  const darkModeToggle = document.getElementById("darkModeToggle");
-
-  // State
-  let customEntries = [];
-  let filteredItems = [];
-  let currentIndex = 0;
-  let recallMode = false;
-  let editingIndex = null; // null means adding new, otherwise editing custom entry index
-
-  // Initialize level filter options (1-50)
-  function initLevelFilter() {
-    for (let i = 1; i <= 50; i++) {
-      const opt = document.createElement("option");
-      opt.value = i;
-      opt.textContent = `Level ${i}`;
-      levelFilter.appendChild(opt);
-    }
-  }
-
-  // Load custom entries from localStorage
-  function loadCustomEntries() {
-    try {
-      const data = localStorage.getItem(LS_CUSTOM);
-      if (data) {
-        customEntries = JSON.parse(data);
-        if (!Array.isArray(customEntries)) customEntries = [];
-      } else {
-        customEntries = [];
-      }
-    } catch {
-      customEntries = [];
-    }
-  }
-
-  // Save custom entries to localStorage
-  function saveCustomEntries() {
-    localStorage.setItem(LS_CUSTOM, JSON.stringify(customEntries));
-  }
-
-  // Load progress (currentIndex, filters, recallMode) from localStorage
-  function loadProgress() {
-    try {
-      const data = localStorage.getItem(LS_PROGRESS);
-      if (data) {
-        const obj = JSON.parse(data);
-        if (typeof obj === "object" && obj !== null) {
-          if (typeof obj.currentIndex === "number") currentIndex = obj.currentIndex;
-          if (typeof obj.levelFilter === "string") levelFilter.value = obj.levelFilter;
-          if (typeof obj.sourceFilter === "string") sourceFilter.value = obj.sourceFilter;
-          if (typeof obj.recallMode === "boolean") {
-            recallMode = obj.recallMode;
-            modeToggle.checked = recallMode;
-          }
+        // Initialize the app
+        function init() {
+            // Load data from localStorage
+            loadCustomEntries();
+            loadProgress();
+            loadDarkMode();
+            
+            // Populate level filter
+            for (let i = 1; i <= 50; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `Level ${i}`;
+                levelFilter.appendChild(option);
+            }
+            
+            // Apply filters and display first item
+            applyFilters();
+            updateDisplay();
+            
+            // Set up event listeners
+            setupEventListeners();
         }
-      }
-    } catch {}
-  }
 
-  // Save progress to localStorage
-  function saveProgress() {
-    const obj = {
-      currentIndex,
-      levelFilter: levelFilter.value,
-      sourceFilter: sourceFilter.value,
-      recallMode,
-    };
-    localStorage.setItem(LS_PROGRESS, JSON.stringify(obj));
-  }
+        // Load custom entries from localStorage
+        function loadCustomEntries() {
+            const saved = localStorage.getItem('germanTagalogCustomEntries');
+            if (saved) {
+                customEntries = JSON.parse(saved);
+                renderCustomList();
+            }
+        }
 
-  // Save dark mode preference
-  function saveDarkMode(isDark) {
-    localStorage.setItem(LS_DARKMODE, isDark ? "1" : "0");
-  }
+        // Save custom entries to localStorage
+        function saveCustomEntries() {
+            localStorage.setItem('germanTagalogCustomEntries', JSON.stringify(customEntries));
+        }
 
-  // Load dark mode preference
-  function loadDarkMode() {
-    const val = localStorage.getItem(LS_DARKMODE);
-    if (val === "1") {
-      document.body.classList.add("dark");
-      darkModeToggle.textContent = "☀️";
-    } else {
-      document.body.classList.remove("dark");
-      darkModeToggle.textContent = "🌙";
-    }
-  }
+        // Load progress from localStorage
+        function loadProgress() {
+            const saved = localStorage.getItem('germanTagalogProgress');
+            if (saved) {
+                const progress = JSON.parse(saved);
+                currentIndex = progress.currentIndex || 0;
+                levelFilter.value = progress.levelFilter || 'all';
+                sourceFilter.value = progress.sourceFilter || 'both';
+                recallMode = progress.recallMode || false;
+                modeToggle.checked = recallMode;
+            }
+        }
 
-  // Filter items based on current filters
-  function filterItems() {
-    const levelVal = levelFilter.value;
-    const sourceVal = sourceFilter.value;
+        // Save progress to localStorage
+        function saveProgress() {
+            const progress = {
+                currentIndex,
+                levelFilter: levelFilter.value,
+                sourceFilter: sourceFilter.value,
+                recallMode
+            };
+            localStorage.setItem('germanTagalogProgress', JSON.stringify(progress));
+        }
 
-    // Filter built-in by level
-    let builtInFiltered = builtInData;
-    if (levelVal !== "all") {
-      const lvl = parseInt(levelVal, 10);
-      builtInFiltered = builtInData.filter((item) => item.level === lvl);
-    }
+        // Load dark mode preference
+        function loadDarkMode() {
+            const isDarkMode = localStorage.getItem('germanTagalogDarkMode') === 'true';
+            document.body.classList.toggle('dark-mode', isDarkMode);
+            darkModeToggle.textContent = isDarkMode ? '☀️' : '🌙';
+        }
 
-    // Filter custom by level (custom entries have no level, treat as all levels)
-    // We can optionally add level to custom entries, but spec doesn't require it.
-    // So custom entries always included if source includes custom.
+        // Toggle dark mode
+        function toggleDarkMode() {
+            const isDarkMode = !document.body.classList.contains('dark-mode');
+            document.body.classList.toggle('dark-mode', isDarkMode);
+            localStorage.setItem('germanTagalogDarkMode', isDarkMode);
+            darkModeToggle.textContent = isDarkMode ? '☀️' : '🌙';
+        }
 
-    let combined = [];
-    if (sourceVal === "built-in") {
-      combined = builtInFiltered;
-    } else if (sourceVal === "custom") {
-      combined = customEntries;
-    } else if (sourceVal === "both") {
-      combined = [...builtInFiltered, ...customEntries];
-    }
+        // Apply filters based on user selections
+        function applyFilters() {
+            const level = levelFilter.value;
+            const source = sourceFilter.value;
+            
+            // Filter by source
+            let items = [];
+            if (source === 'built-in') {
+                items = [...builtInData];
+            } else if (source === 'custom') {
+                items = [...customEntries];
+            } else { // both
+                items = [...builtInData, ...customEntries];
+            }
+            
+            // Filter by level if not "all"
+            if (level !== 'all') {
+                const levelNum = parseInt(level, 10);
+                items = items.filter(item => item.level === levelNum);
+            }
+            
+            filteredItems = items;
+            
+            // Reset to first item if current index is out of bounds
+            if (currentIndex >= filteredItems.length) {
+                currentIndex = 0;
+            }
+        }
 
-    filteredItems = combined;
-    if (filteredItems.length === 0) {
-      currentIndex = 0;
-    } else if (currentIndex >= filteredItems.length) {
-      currentIndex = filteredItems.length - 1;
-    }
-  }
+        // Update the display with current item
+        function updateDisplay() {
+            if (filteredItems.length === 0) {
+                germanWordEl.textContent = 'No items to display';
+                pronunciationEl.textContent = '';
+                pronunciationEl.classList.add('hidden');
+                revealBtn.disabled = true;
+                speakBtn.disabled = true;
+                progressIndicator.textContent = 'Item 0 of 0';
+                return;
+            }
+            
+            const currentItem = filteredItems[currentIndex];
+            germanWordEl.textContent = currentItem.german;
+            
+            // In recall mode, pronunciation starts hidden
+            pronunciationEl.textContent = currentItem.pronunciation;
+            if (recallMode) {
+                pronunciationEl.classList.add('hidden');
+                revealBtn.disabled = false;
+            } else {
+                pronunciationEl.classList.remove('hidden');
+                revealBtn.disabled = true;
+            }
+            
+            // Clear previous input and feedback
+            practiceInput.value = '';
+            feedbackEl.textContent = '';
+            feedbackEl.classList.remove('correct', 'incorrect');
+            
+            // Update progress indicator
+            progressIndicator.textContent = `Item ${currentIndex + 1} of ${filteredItems.length}`;
+            
+            // Update navigation buttons
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === filteredItems.length - 1;
+            
+            // Enable/disable speak button based on browser support
+            speakBtn.disabled = !('speechSynthesis' in window);
+        }
 
-  // Normalize strings for comparison (lowercase, remove accents, spaces, punctuation)
-  function normalize(str) {
-    return str
+        // Render the custom entries list
+        function renderCustomList() {
+            customList.innerHTML = '';
+            
+            if (customEntries.length === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.textContent = 'No custom entries yet. Add some above.';
+                emptyMsg.style.padding = '1rem';
+                emptyMsg.style.textAlign = 'center';
+                emptyMsg.style.color = 'var(--secondary)';
+                customList.appendChild(emptyMsg);
+                return;
+            }
+            
+            customEntries.forEach((entry, index) => {
+                const item = document.createElement('div');
+                item.className = 'custom-item';
+                
+                const text = document.createElement('div');
+                text.textContent = `${entry.german} - ${entry.pronunciation}`;
+                
+                const actions = document.createElement('div');
+                actions.className = 'custom-item-actions';
+                
+                const editBtn = document.createElement('button');
+                editBtn.className = 'btn-secondary';
+                editBtn.textContent = 'Edit';
+                editBtn.onclick = () => editCustomEntry(index);
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn-danger';
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.onclick = () => deleteCustomEntry(index);
+                
+                actions.appendChild(editBtn);
+                actions.appendChild(deleteBtn);
+                
+                item.appendChild(text);
+                item.appendChild(actions);
+                
+                customList.appendChild(item);
+            });
+        }
+
+        // Add a new custom entry
+        function addCustomEntry() {
+            const german = customGermanInput.value.trim();
+            const pronunciation = customPronunciationInput.value.trim();
+            
+            if (!german || !pronunciation) {
+                alert('Please enter both German and pronunciation.');
+                return;
+            }
+            
+            customEntries.push({
+                german,
+                pronunciation,
+                level: 0 // Custom entries have level 0
+            });
+            
+            saveCustomEntries();
+            renderCustomList();
+            clearCustomForm();
+            
+            // Reapply filters and update display if showing custom entries
+            if (sourceFilter.value === 'custom' || sourceFilter.value === 'both') {
+                applyFilters();
+                updateDisplay();
+            }
+        }
+
+        // Edit a custom entry
+        function editCustomEntry(index) {
+            const entry = customEntries[index];
+            customGermanInput.value = entry.german;
+            customPronunciationInput.value = entry.pronunciation;
+            
+            editingIndex = index;
+            
+            addBtn.style.display = 'none';
+            updateBtn.style.display = 'inline-block';
+            cancelBtn.style.display = 'inline-block';
+        }
+
+        // Update a custom entry
+        function updateCustomEntry() {
+            if (editingIndex === -1) return;
+            
+            const german = customGermanInput.value.trim();
+            const pronunciation = customPronunciationInput.value.trim();
+            
+            if (!german || !pronunciation) {
+                alert('Please enter both German and pronunciation.');
+                return;
+            }
+            
+            customEntries[editingIndex] = {
+                german,
+                pronunciation,
+                level: 0
+            };
+            
+            saveCustomEntries();
+            renderCustomList();
+            cancelEdit();
+            
+            // Reapply filters and update display if showing custom entries
+            if (sourceFilter.value === 'custom' || sourceFilter.value === 'both') {
+                applyFilters();
+                updateDisplay();
+            }
+        }
+
+        // Delete a custom entry
+        function deleteCustomEntry(index) {
+            if (confirm('Are you sure you want to delete this entry?')) {
+                customEntries.splice(index, 1);
+                saveCustomEntries();
+                renderCustomList();
+                
+                // Reapply filters and update display if showing custom entries
+                if (sourceFilter.value === 'custom' || sourceFilter.value === 'both') {
+                    applyFilters();
+                    updateDisplay();
+                }
+            }
+        }
+
+        // Cancel editing a custom entry
+        function cancelEdit() {
+            editingIndex = -1;
+            clearCustomForm();
+            
+            addBtn.style.display = 'inline-block';
+            updateBtn.style.display = 'none';
+            cancelBtn.style.display = 'none';
+        }
+
+        // Clear the custom entry form
+        function clearCustomForm() {
+            customGermanInput.value = '';
+            customPronunciationInput.value = '';
+        }
+
+        // Speak the German word using browser's speech synthesis
+        function speakWord() {
+            if (!('speechSynthesis' in window) || filteredItems.length === 0) return;
+            
+            const utterance = new SpeechSynthesisUtterance(filteredItems[currentIndex].german);
+            utterance.lang = 'de-DE';
+            utterance.rate = 0.8; // Slightly slower for learning
+            
+            speechSynthesis.speak(utterance);
+        }
+
+        // Check user's pronunciation attempt
+        function checkPronunciation() {
+            if (filteredItems.length === 0) return;
+            
+            const userInput = practiceInput.value.trim().toLowerCase();
+            const correctPronunciation = filteredItems[currentIndex].pronunciation.toLowerCase();
+            
+            // Simple comparison with some tolerance for minor variations
+            const normalizedUser = userInput.replace(/\s+/g, '');
+            const normalizedCorrect = correctPronunciation.replace(/\s+/g, '');
+            
+            if (normalizedUser === normalizedCorrect) {
+                feedbackEl.textContent = 'Correct!';
+                feedbackEl.className = 'feedback correct';
+            } else {
+                feedbackEl.textContent = 'Incorrect. Try again.';
+                feedbackEl.className = 'feedback incorrect';
+            }
+        }
+
+        // Clear the practice input and feedback
+        function clearPractice() {
+            practiceInput.value = '';
+            feedbackEl.textContent = '';
+            feedbackEl.className = 'feedback';
+        }
+
+        // Reveal the correct pronunciation
+        function revealPronunciation() {
+            pronunciationEl.classList.remove('hidden');
+            revealBtn.disabled = true;
+        }
+
+        // Navigate to the previous item
+        function prevItem() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                saveProgress();
+                updateDisplay();
+            }
+        }
+
+        // Navigate to the next item
+        function nextItem() {
+            if (currentIndex < filteredItems.length - 1) {
+                currentIndex++;
+                saveProgress();
+                updateDisplay();
+            }
+        }
+
+        // Reset all user data
+        function resetData() {
+            if (confirm('Are you sure you want to reset all your data? This cannot be undone.')) {
+                localStorage.removeItem('germanTagalogCustomEntries');
+                localStorage.removeItem('germanTagalogProgress');
+                customEntries = [];
+                currentIndex = 0;
+                levelFilter.value = 'all';
+                sourceFilter.value = 'both';
+                recallMode = false;
+                modeToggle.checked = false;
+                editingIndex = -1;
+                
+                clearCustomForm();
+                addBtn.style.display = 'inline-block';
+                updateBtn.style.display = 'none';
+                cancelBtn.style.display = 'none';
+                
+                applyFilters();
+                updateDisplay();
+                renderCustomList();
+            }
+        }
+
+        // Set up all event listeners
+        function setupEventListeners() {
+            // Filter change events
+            levelFilter.addEventListener('change', () => {
+                applyFilters();
+                saveProgress();
+                updateDisplay();
+            });
+            
+            sourceFilter.addEventListener('change', () => {
+                applyFilters();
+                saveProgress();
+                updateDisplay();
+            });
+            
+            modeToggle.addEventListener('change', () => {
+                recallMode = modeToggle.checked;
+                saveProgress();
+                updateDisplay();
+            });
+            
+            // Card button events
+            revealBtn.addEventListener('click', revealPronunciation);
+            speakBtn.addEventListener('click', speakWord);
+            checkBtn.addEventListener('click', checkPronunciation);
+            clearBtn.addEventListener('click', clearPractice);
+            
+            // Practice input - allow Enter key to check
+            practiceInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    checkPronunciation();
+                }
+            });
+            
+            // Navigation events
+            prevBtn.addEventListener('click', prevItem);
+            nextBtn.addEventListener('click', nextItem);
+            
+            // Custom entry events
+            addBtn.addEventListener('click', addCustomEntry);
+            updateBtn.addEventListener('click', updateCustomEntry);
+            cancelBtn.addEventListener('click', cancelEdit);
+            
+            // Allow Enter key in custom form fields
+            customGermanInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    if (editingIndex === -1) {
+                        addCustomEntry();
+                    } else {
+                        updateCustomEntry();
+                    }
+                }
+            });
+            
+            customPronunciationInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    if (editingIndex === -1) {
+                        addCustomEntry();
+                    } else {
+                        updateCustomEntry();
+                    }
+                }
+            });
+            
+            // Reset button
+            resetBtn.addEventListener('click', resetData);
+            
+            // Dark mode toggle
+            darkModeToggle.addEventListener('click', toggleDarkMode);
+        }
+
+        // Initialize the app when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
